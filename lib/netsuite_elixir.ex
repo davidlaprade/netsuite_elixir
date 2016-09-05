@@ -1,0 +1,2 @@
+defmodule NetSuite do
+end

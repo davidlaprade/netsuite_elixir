@@ -1,0 +1,3 @@
+%{"detergent": {:hex, :detergent, "0.3.0", "564792f4eec88d787628d115cef89d9f0e42eb7012c9313cb0dcda89696bb904", [:rebar], []},
+  "detergentex": {:hex, :detergentex, "0.0.7", "74c888e425e5c15b71b947ed38a68a183148e5119de9cb5521f25e6ecc67dabc", [:mix], [{:detergent, "~> 0.3.0", [hex: :detergent, optional: false]}]},
+  "erlsom": {:git, "https://github.com/willemdj/erlsom.git", "9b3f9106a9b1376ab7a4dbdd11cae7bb9835ef0a", []}}
