@@ -19,13 +19,21 @@ defmodule NetSuite.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :detergentex]]
+    [
+      applications: [
+        :logger,
+        :detergentex,
+        :httpoison
+      ]
+    ]
   end
 
   defp deps do
     [
       {:erlsom, github: "willemdj/erlsom"},
-      {:detergentex, "~> 0.0.7" }
+      {:detergentex, "~> 0.0.7" },
+      {:httpoison, "~> 0.9.0"},
+      {:poison, "~> 2.0"}
     ]
   end
 end
