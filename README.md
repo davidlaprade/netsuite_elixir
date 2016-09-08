@@ -23,7 +23,29 @@ REST endpoints as well.
 
 ## Usage
 
+  Load the app into the elixir REPL:
+
   ```shell
-    > iex -S mix
+    iex -S mix
   ```
 
+  Once in the REPL, set your credentials:
+
+  ```elixir
+
+    NetSuite.Configuration.set %{
+      email:       ...,  # String, required
+      password:    ...,  # String, required
+      account:     ...,  # String, optional
+      wsdl:        ...,  # String, optional but has default
+      api_version: ...,  # String, optional but has default "2012_1"
+      production:  true  # Boolean, optional but defaults to true
+    }
+
+  ```
+
+  Test that your credentials are working:
+
+  ```elixir
+    NetSuite.Rest.Roles.get
+  ```
