@@ -1,15 +1,6 @@
 defmodule NetSuite do
-end
 
-defmodule NetSuite.Configuration do
-  @doc """
-    usage %NetSuite.Configuration{email: "me@gmail.com", password: "..."}
-  """
-
-  defstruct email: "",
-            password: "",
-            production: true,
-            wsdl: "",
-            api_version: "2012_1"
+  defdelegate config(auth), to: NetSuite.Configuration, as: :set
+  defdelegate config, to: NetSuite.Configuration, as: :get
 
 end
