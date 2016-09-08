@@ -1,7 +1,7 @@
 defmodule NetSuite.Configuration do
 
   @doc ~S"""
-  Sets the credentials used to make API requests.
+  Set/get the credentials used to make API requests.
 
   ## Usage:
 
