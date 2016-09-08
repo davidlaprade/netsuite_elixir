@@ -1,37 +1,19 @@
 defmodule NetSuite.Configuration do
 
-  @moduledoc """
-    Set this config before making any API calls
+  @doc ~S"""
+  Sets the credentials used to make API requests.
 
-    You can do it manually:
+  ## Usage:
 
-      NetSuite.Configuration.set %{
-        email: ...,
-        password: ...,
-        production: true,
-        wsdl: ...,
-        api_version: ...
-      }
+    iex> NetSuite.Configuration.set %{email: "bob@gmail.com", password: "muffins"}
+    :ok
+    iex> NetSuite.Configuration.get
+    %{email: "bob@gmail.com", password: "muffins"}
+    iex> NetSuite.Configuration.get.email
+    "bob@gmail.com"
 
-    Or, export the following vars into your shell:
-
-      export NETSUITE_EMAIL=...
-      export NETSUITE_PASSWORD=...
-      export NETSUITE_PRODUCTION=...
-      export NETSUITE_WSDL=...
-      export NETSUITE_API=...
-
-    Check your configs at any time with:
-
-      NetSuite.Configuration.get
-
-    Or just:
-
-      NetSuite.config
-
-    Get a specific config:
-
-      NetSuite.config.email
+    iex> NetSuite.Configuration.set %{ password: "muffins", shmemail: "" }
+    ** (RuntimeError) unsupported config: shmemail
 
   """
 

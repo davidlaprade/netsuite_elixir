@@ -1,8 +1,0 @@
-defmodule NetSuiteTest do
-  use ExUnit.Case
-  doctest NetSuite
-
-  test "the truth" do
-    assert 1 + 1 == 2
-  end
-end
