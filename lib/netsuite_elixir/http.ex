@@ -6,4 +6,6 @@ defmodule NetSuite.HTTP do
 
   @callback get(uri :: String.t, headers :: Map.t) :: Tuple.t
 
+  @callback parse(respone :: Tuple.t) :: Tuple.t
+
 end

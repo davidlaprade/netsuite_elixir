@@ -4,15 +4,15 @@ defmodule NetSuite.HTTP.Client do
 
   def get(uri, headers) do
     client.start
-    parse_response client.get(uri, headers)
+    client.get(uri, headers)
+  end
+
+  def parse({_, response}) do
+    {response.status_code, Poison.decode!(response.body)}
   end
 
   defp client do
     HTTPoison
-  end
-
-  defp parse_response({_, response}) do
-    {response.status_code, Poison.decode!(response.body)}
   end
 
 end

@@ -31,10 +31,11 @@ defmodule NetSuite.Rest.Roles do
   @endpoint "/roles"
 
   def get(config \\ NetSuite.config, client \\ NetSuite.HTTP.Client ) do
-    client.get(
+    response = client.get(
       NetSuite.Rest.API.uri(@endpoint, config.production),
       NetSuite.Rest.API.auth_header(config.email, config.password)
     )
+    client.parse(response)
   end
 
 end
