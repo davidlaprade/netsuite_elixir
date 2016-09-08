@@ -1,4 +1,6 @@
 # NetSuite
+[![Build
+Status](https://travis-ci.org/davidlaprade/netsuite_elixir.svg?branch=master)](https://travis-ci.org/davidlaprade/netsuite_elixir)
 
 Elixir client for NetSuite's SuiteTalk SOAP API, with support for some built-in
 REST endpoints as well.
