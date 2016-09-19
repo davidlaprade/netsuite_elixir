@@ -36,4 +36,38 @@ defmodule NetSuite.Configuration do
     Application.put_env(:netsuite_elixir, :config, config)
   end
 
+  defp set_password(input) do
+  end
+
+  defp set_email(input) do
+  end
+
+  defp set_production(input) do
+  end
+
+  defp set_account(input) do
+  end
+
+  defp set_wsdl(input) do
+  end
+
+  defp set_api(input) do
+    input || "2012_2"
+  end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 end

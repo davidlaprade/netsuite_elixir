@@ -1,6 +1,6 @@
 use Mix.Config
 
-config :netsuite_elixir, :config, %{
+config :netsuite_elixir, :config, %NetSuite.Config{
   email:        System.get_env("NETSUITE_EMAIL"),
   password:     System.get_env("NETSUITE_PASSWORD"),
   account:      System.get_env("NETSUITE_ACCOUNT"),
