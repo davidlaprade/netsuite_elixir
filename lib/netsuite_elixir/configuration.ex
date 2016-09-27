@@ -5,69 +5,75 @@ defmodule NetSuite.Configuration do
 
   ## Usage:
 
-    iex> NetSuite.Configuration.set %{email: "bob@gmail.com", password: "muffins"}
-    :ok
     iex> NetSuite.Configuration.get
-    %{email: "bob@gmail.com", password: "muffins"}
+    %NetSuite.Configuration{account: "TSTDRV1", api_version: "2016_2", email:
+      "bob@gmail.com", password: "secret", production: true, wsdl: "wsdl"}
+
     iex> NetSuite.Configuration.get.email
     "bob@gmail.com"
 
+    iex> NetSuite.Configuration.get.account
+    "TSTDRV1"
+
+    iex> NetSuite.Configuration.set %{email: "new email", password: "new password"}
+    [:ok, %NetSuite.Configuration{account: "TSTDRV1", api_version: "2016_2", email:
+      "new email", password: "new password"", production: true, wsdl: "wsdl"}
+
     iex> NetSuite.Configuration.set %{ password: "muffins", shmemail: "" }
-    ** (RuntimeError) unsupported config: shmemail
+    [:error, "unsupported config: shmemail"]
 
   """
 
-  @allowed [
-    :email,
-    :password,
-    :production,
-    :account,
-    :wsdl,
-    :api_version
-  ]
+  @default_wsdl "https://webservices.netsuite.com"
+  @default_api "2012_2"
 
-  def get, do: Application.get_env(:netsuite_elixir, :config)
+  defstruct email: "",
+    password:      "",
+    production:    false,
+    account:       "",
+    wsdl:          @default_wsdl,
+    api_version:   @default_api
 
-  def set(config) do
+  # TODO move this over to OTP, get things started...
+  def get do
+    %__MODULE__{
+      email:        format_email(Application.get_env :netsuite_elixir, :email),
+      password:     format_password(Application.get_env :netsuite_elixir, :password),
+      account:      format_account(Application.get_env :netsuite_elixir, :account),
+      production:   format_environment(Application.get_env :netsuite_elixir, :production),
+      wsdl:         format_wsdl(Application.get_env :netsuite_elixir, :wsdl),
+      api_version:  format_api(Application.get_env :netsuite_elixir, :api_version)
+    }
+  end
+
+  def set(config) when is_map(config) do
+    allowed_keys = Map.keys(%__MODULE__{})
     Enum.each(Map.keys(config), fn(key) ->
-      if !Enum.member?(@allowed, key), do: raise "unsupported config: #{key}"
+      if Enum.member?(allowed_keys, key) do
+        Application.put_env(:netsuite_elixir, key, Map.get(config, key))
+      else
+        [:error, "unsupported config: #{key}"]
+      end
     end)
+    [:ok, get]
+  end
+  def set(_), do: raise ArgumentError.exception("set configuration with a map")
 
-    Application.put_env(:netsuite_elixir, :config, config)
+  defp format_password(input), do: input
+
+  defp format_email(input), do: input
+
+  defp format_environment(input) when is_binary(input), do: input == "true"
+  defp format_environment(input) when is_boolean(input), do: input
+
+  defp format_account(input), do: input
+
+  defp format_wsdl(input) do
+    input || @default_wsdl
   end
 
-  defp set_password(input) do
+  defp format_api(input) do
+    input || @default_api
   end
-
-  defp set_email(input) do
-  end
-
-  defp set_production(input) do
-  end
-
-  defp set_account(input) do
-  end
-
-  defp set_wsdl(input) do
-  end
-
-  defp set_api(input) do
-    input || "2012_2"
-  end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 end
