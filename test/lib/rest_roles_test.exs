@@ -13,6 +13,7 @@ defmodule NetSuiteRestRolesTest do
       password: "secret",
       production: true
     }
+    :ok
   end
 
   test "it gets and parses the API response" do
