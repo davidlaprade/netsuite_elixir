@@ -24,7 +24,8 @@ defmodule NetSuite.Mixfile do
         :logger,
         :detergentex,
         :httpoison
-      ]
+      ],
+      mod: {NetSuite, []}
     ]
   end
 
