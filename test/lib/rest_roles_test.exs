@@ -1,6 +1,6 @@
 defmodule TestHelper.HTTP.Client do
   @behaviour NetSuite.HTTP
-  def get(uri, headers), do: "response"
+  def get(_, _), do: "response"
   def parse(response), do: "parsed #{response}"
 end
 
