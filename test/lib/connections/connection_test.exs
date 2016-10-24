@@ -33,7 +33,7 @@ defmodule NetSuite.Connections.ConnectionTest do
   end
 
   test "doesn't crash when there are errors in netsuite_calls", %{agent: agent} do
-    buggy_funct = fn(_) -> 2+nil end
+    buggy_funct = fn(_) -> raise ArithmeticError end
     assert :ok == @described_module.cast(agent, ticket=make_ref(), buggy_funct)
     assert {:error, %ArithmeticError{message: "bad argument in arithmetic expression"}} == wait_for_response(ticket)
     assert Process.alive?(agent)
