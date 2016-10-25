@@ -21,15 +21,20 @@ defmodule NetSuite.Connections.Pool do
     GenServer.call(__MODULE__, {:remove, pid})
   end
 
-  @doc " list all connections in the pool as tuples {<pid>, config}"
+  @doc "list all connections in the pool"
+  @spec list :: [{pid, map}]
   def list do
     GenServer.call(__MODULE__, :list)
   end
 
-  def queue(funct) do
-    GenServer.call(__MODULE__, {:queue, funct})
+  @doc "queue a netsuite call for asynchronous processing"
+  @spec queue(fun) :: atom
+  def queue(netsuite_call) when is_function(netsuite_call) do
+    GenServer.call(__MODULE__, {:queue, netsuite_call})
   end
 
+  @doc "fetch the netsuite response from the a queued request"
+  @spec response(reference) :: { atom, any }
   def response(ticket) when is_reference(ticket) do
     GenServer.call(__MODULE__, {:get_response, ticket})
   end
