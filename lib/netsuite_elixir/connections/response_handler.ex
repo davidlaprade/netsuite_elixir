@@ -18,7 +18,7 @@ defmodule NetSuite.Connections.ResponseHandler do
       {:finished, response} ->  {:ok, {:ok, response}, Map.delete(responses, ref)}
       {:pending, _response} ->  {:ok, {:pending, nil}, responses}
       {:error,    error}    ->  {:ok, {:error, error}, Map.delete(responses, ref)}
-      nil ->  {:ok, {:error, "response not found for reference", ref}, responses}
+      nil ->  {:ok, {:error, {"response not found for reference", ref}}, responses}
     end
   end
 
