@@ -7,6 +7,9 @@ defmodule NetSuite do
   def start(_type, _args) do
     {:ok, sup}  = NetSuite.Connections.Supervisor.start_link
 
+    # TODO the receiver should be supervised
+    {:ok, _pid} = NetSuite.Connections.Receiver.start_link
+
     {:ok, _pid} = NetSuite.Connections.Pool.start_link
     configs = Application.get_env(:netsuite_elixir, :configs, [])
     for config <- configs, do: NetSuite.Connections.Pool.add(config)
