@@ -26,6 +26,14 @@ defmodule NetSuite.Connections.Pool do
     GenServer.call(__MODULE__, :list)
   end
 
+  def queue(funct) do
+    GenServer.call(__MODULE__, {:queue, funct})
+  end
+
+  def response(ticket) when is_reference(ticket) do
+    GenServer.call(__MODULE__, {:get_response, ticket})
+  end
+
   # server -------------------------
 
   def init(:ok) do
@@ -43,6 +51,20 @@ defmodule NetSuite.Connections.Pool do
   def handle_call({:remove, connection_pid}, _from, {connections, refs}) do
     NetSuite.Connections.Supervisor.sever_connection(connection_pid)
     {:reply, :ok, {List.delete(connections, connection_pid), refs}}
+  end
+
+  def handle_call({:queue, funct}, _from, {connections, refs}) do
+    # TODO keep track of which connections are free
+    [connection | connections] = connections
+
+    NetSuite.Connections.Connection.cast(connection, ticket = make_ref(), funct)
+
+    # put the connection at the end of the list
+    {:reply, {:ok, ticket}, {List.insert_at(connections, -1, connection), refs}}
+  end
+
+  def handle_call({:get_response, ticket}, _from, state) do
+    {:reply, NetSuite.Connections.Receiver.get(ticket), state}
   end
 
   def handle_call(:list, _from, {connections, _} = state) do
