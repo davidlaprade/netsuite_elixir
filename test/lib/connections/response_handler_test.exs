@@ -32,7 +32,7 @@ defmodule NetSuite.Connections.ResponseHandlerTest do
     state = %{fake: :response}
     {:ok, reply, new_state} = @module.handle_call({:get, ref}, state)
 
-    assert reply == {:error, "response not found for reference", ref}
+    assert reply == {:error, {"response not found for reference", ref}}
     assert new_state == state
   end
 
