@@ -4,6 +4,9 @@ defmodule NetSuite do
   defdelegate config(auth), to: NetSuite.Configuration, as: :set
   defdelegate config, to: NetSuite.Configuration, as: :get
 
+  defdelegate call(funct), to: NetSuite.Connections.Pool, as: :queue
+  defdelegate get(ticket), to: NetSuite.Connections.Pool, as: :response
+
   def start(_type, _args) do
     {:ok, sup}  = NetSuite.Connections.Supervisor.start_link
 
