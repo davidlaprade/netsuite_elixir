@@ -27,6 +27,17 @@ defmodule NetSuite do
   defdelegate response(ticket), to: NetSuite.Connections.Pool, as: :response
 
   @doc """
+  Block the current process until NetSuite returns the response
+  """
+  @spec wait_for_response(reference) :: {atom, any}
+  def wait_for_response(ticket) do
+    case response(ticket) do
+      {:pending, _response} -> wait_for_response(ticket)
+      response              -> response
+    end
+  end
+
+  @doc """
   Make a NetSuite call using the next connection in the connection pool
   Block the current process until the call finishes
 
@@ -46,10 +57,4 @@ defmodule NetSuite do
     wait_for_response(ticket)
   end
 
-  defp wait_for_response(ticket) do
-    case get(ticket) do
-      {:pending, _response} -> wait_for_response(ticket)
-      response              -> response
-    end
-  end
 end
