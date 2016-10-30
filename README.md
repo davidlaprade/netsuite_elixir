@@ -1,4 +1,4 @@
-# NetSuite
+# NetSuiteElixir
 [![Build
 Status](https://travis-ci.org/davidlaprade/netsuite_elixir.svg?branch=master)](https://travis-ci.org/davidlaprade/netsuite_elixir)
 
@@ -30,7 +30,7 @@ REST endpoints as well.
   Given that it can take upwards of 2 seconds to fetch a single record (!),
   this is nothing short of depressing.
 
-  `netsuite_elixir` aims to improve this. It allows you to store and draw from a
+  NetSuiteElixir aims to improve this. It allows you to store and draw from a
   pool of NetSuite credentials when making your requests. Simply set your
   configs [here](https://github.com/davidlaprade/netsuite_elixir/blob/master/config/config.exs#L3),
   and view the connection processes running them:
@@ -42,30 +42,49 @@ REST endpoints as well.
   Did someone say [OTP](https://en.wikipedia.org/wiki/Open_Telecom_Platform)?
   Yes. Yes, please.
 
-  Process NetSuite calls asynchronously then fetch the responses at a later
-  time:
+  NetSuiteElixir offers first-class support for asynchronous requests through
+  its connection pool. By default, all requests are kicked off to the pool and
+  run in a separate process, and can be retrieved when they finish. Each API call
+  returns a ticket (reference) that can be used to look up the result.
 
   ```elixir
-    {:ok, ticket} = NetSuite.call_async(fn(config) ->
-      NetSuite.Rest.Roles.get(config)
-    end)
+    {:ok, ticket} = NetSuite.Rest.Roles.get
 
-    NetSuite.get(ticket)
-    => {:pending, nil}
+    NetSuite.response(ticket)
+    => {:pending, nil} # because the request isn't finished yet
 
     # time passes ...
 
-    NetSuite.get(ticket)
+    NetSuite.response(ticket)
     => {:ok, {200, [%{"account" => %{"internalId" => "TSTDRV12314", ... }
-
   ```
 
-  Or, process them the old-fashioned way, one at a time:
+  Want to use the connection pool but block the current process until your
+  request completes? No problem:
 
   ```elixir
-    NetSuite.call(fn(config) ->
-      NetSuite.Rest.Roles.get(config)
+    {:ok, ticket} = NetSuite.Rest.Roles.get
+
+    NetSuite.wait_for_response(ticket)
+    => {:ok, {200, [%{"account" => %{"internalId" => "TSTDRV12314", ... }
+  ```
+
+  Have a bunch of requests that you want made with the same
+  connection/credentials? Just pass them to NetSuite#call/1:
+
+  ```elixir
+    {:ok, ticket} = NetSuite.call(fn(config) ->
+      fulfillment = NetSuite.Records.ItemFulfillment.get(config, 827332)
+      sales_order = NetSuite.Records.SalesOrder.get(config, fulfillment.created_from)
+      NetSuite.Records.SalesOrder.delete(sales_order)
     end)
+  ```
+
+  Or, process them the old-fashioned way, one at a time by specifying the
+  configs you want the request made with:
+
+  ```elixir
+    NetSuite.Rest.Roles.get(%NetSuite.Configuration{...})
     => {:ok, {200, [%{"account" => %{"internalId" => "TSTDRV12314", ... }
   ```
 
