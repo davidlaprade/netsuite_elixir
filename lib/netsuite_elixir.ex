@@ -23,8 +23,8 @@ defmodule NetSuite do
   @spec call_async(fun) :: {atom, reference}
   defdelegate call_async(funct), to: NetSuite.Connections.Pool, as: :queue
 
-  @spec get(reference) :: {atom, any}
-  defdelegate get(ticket), to: NetSuite.Connections.Pool, as: :response
+  @spec response(reference) :: {atom, any}
+  defdelegate response(ticket), to: NetSuite.Connections.Pool, as: :response
 
   @doc """
   Make a NetSuite call using the next connection in the connection pool
