@@ -26,14 +26,14 @@ defmodule NetSuite.Connections.Connection do
     is_reference(ticket) and
     is_function(netsuite_call) do
 
-    GenEvent.notify(@receiver, {:request_begin, ticket})
+    GenEvent.notify(@receiver, {:request_begin, {ticket, pid}})
 
     Agent.cast(pid, fn(config)->
       try do
         response = netsuite_call.(config)
-        GenEvent.notify(@receiver, {:request_end, {ticket, response}})
+        GenEvent.notify(@receiver, {:request_end, {ticket, pid, response}})
       rescue
-        e in _ -> GenEvent.notify(@receiver, {:request_error, {ticket, e}})
+        e in _ -> GenEvent.notify(@receiver, {:request_error, {ticket, pid, e}})
       end
 
       config
