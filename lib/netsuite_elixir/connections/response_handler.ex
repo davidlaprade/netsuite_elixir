@@ -21,9 +21,9 @@ defmodule NetSuite.Connections.ResponseHandler do
 
   def handle_call({:get, ref}, responses) do
     case Map.get(responses, ref) do
-      {:finished, agent, response} ->  {:ok, {:ok, agent, response}, Map.delete(responses, ref)}
-      {:pending,  agent, response} ->  {:ok, {:pending, agent, nil}, responses}
-      {:error,    agent, error}    ->  {:ok, {:error, agent, error}, Map.delete(responses, ref)}
+      {:finished, _agent, response} -> {:ok, {:ok, response}, Map.delete(responses, ref)}
+      {:pending,  _agent, response} -> {:ok, {:pending, nil}, responses}
+      {:error,    _agent, error}    -> {:ok, {:error, error}, Map.delete(responses, ref)}
       nil ->  {:ok, {:error, {"response not found for reference", ref}}, responses}
     end
   end
