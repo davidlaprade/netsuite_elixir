@@ -29,10 +29,10 @@ defmodule NetSuite.Connections.ResponseHandler do
   end
 
   def handle_call(:engaged_connections, responses) do
-    agents = Map.keys(responses)
-    |> Enum.filter(fn({key, _agent, _}) -> key==:pending end)
-    |> Enum.map(fn({_key, agent, _}) -> agent end)
-    {:ok, agents, responses}
+    connections = Map.values(responses)
+                  |> Enum.filter(fn({key, _connection, _}) -> key==:pending end)
+                  |> Enum.map(fn({_key, connection, _}) -> connection end)
+    {:ok, connections, responses}
   end
 
 end

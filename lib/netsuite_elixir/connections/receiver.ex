@@ -13,4 +13,8 @@ defmodule NetSuite.Connections.Receiver do
     GenEvent.call(__MODULE__, @handler, {:get, ticket})
   end
 
+  def engaged_connections do
+    GenEvent.call(__MODULE__, @handler, :engaged_connections)
+  end
+
 end
