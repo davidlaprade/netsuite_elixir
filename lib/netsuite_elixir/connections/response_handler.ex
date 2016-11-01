@@ -1,29 +1,29 @@
 defmodule NetSuite.Connections.ResponseHandler do
   use GenEvent
 
-  def handle_event({:request_end, {ticket, agent, response}}, responses) when
+  def handle_event({:request_end, {ticket, conn, response}}, responses) when
     is_reference(ticket) and
-    is_pid(agent) do
-    {:ok, Map.put(responses, ticket, {:finished, agent, response})}
+    is_pid(conn) do
+    {:ok, Map.put(responses, ticket, {:finished, conn, response})}
   end
 
-  def handle_event({:request_begin, {ticket, agent}}, responses) when
+  def handle_event({:request_begin, {ticket, conn}}, responses) when
     is_reference(ticket) and
-    is_pid(agent) do
-    {:ok, Map.put(responses, ticket, {:pending, agent, nil})}
+    is_pid(conn) do
+    {:ok, Map.put(responses, ticket, {:pending, conn, nil})}
   end
 
-  def handle_event({:request_error, {ticket, agent, error}}, responses) when
+  def handle_event({:request_error, {ticket, conn, error}}, responses) when
     is_reference(ticket) and
-    is_pid(agent) do
-    {:ok, Map.put(responses, ticket, {:error, agent, error})}
+    is_pid(conn) do
+    {:ok, Map.put(responses, ticket, {:error, conn, error})}
   end
 
   def handle_call({:get, ref}, responses) do
     case Map.get(responses, ref) do
-      {:finished, _agent, response} -> {:ok, {:ok, response}, Map.delete(responses, ref)}
-      {:pending,  _agent, response} -> {:ok, {:pending, nil}, responses}
-      {:error,    _agent, error}    -> {:ok, {:error, error}, Map.delete(responses, ref)}
+      {:finished, _conn, response} -> {:ok, {:ok, response}, Map.delete(responses, ref)}
+      {:pending,  _conn, response} -> {:ok, {:pending, nil}, responses}
+      {:error,    _conn, error}    -> {:ok, {:error, error}, Map.delete(responses, ref)}
       nil ->  {:ok, {:error, {"response not found for reference", ref}}, responses}
     end
   end
