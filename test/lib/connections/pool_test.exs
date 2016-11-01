@@ -21,7 +21,7 @@ defmodule NetSuite.Connections.PoolTest do
     assert config==list_config
   end
 
-  test "list order changes after making an API call" do
+  test "cycles through connection list as it makes API calls" do
     @described_module.add(%{fake: :config})
     pid = @described_module.add(config=%{make: :believe})
     {list_pid, list_config} = List.first(@described_module.list)

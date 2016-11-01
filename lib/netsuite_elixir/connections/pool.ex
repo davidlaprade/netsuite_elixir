@@ -58,14 +58,15 @@ defmodule NetSuite.Connections.Pool do
     {:reply, :ok, {List.delete(connections, connection_pid), refs}}
   end
 
-  def handle_call({:queue, funct}, _from, {connections, refs}) do
-    # TODO keep track of which connections are free
-    [connection | connections] = connections
+  def handle_call({:queue, netsuite_call}, _from, {connections, refs}) do
+    NetSuite.Connections.Connection.cast(
+      conn = NetSuite.Connections.QueueService.next_in_line(connections),
+      ticket = make_ref(),
+      netsuite_call
+    )
+    connections = NetSuite.Connections.QueueService.cycle_pool(connections, conn)
 
-    NetSuite.Connections.Connection.cast(connection, ticket = make_ref(), funct)
-
-    # put the connection at the end of the list
-    {:reply, {:ok, ticket}, {List.insert_at(connections, -1, connection), refs}}
+    {:reply, {:ok, ticket}, {connections, refs}}
   end
 
   def handle_call({:get_response, ticket}, _from, state) do

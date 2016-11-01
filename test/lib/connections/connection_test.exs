@@ -3,13 +3,6 @@ defmodule NetSuite.Connections.ConnectionTest do
 
   @described_module NetSuite.Connections.Connection
 
-  defp wait_for_response(ticket) do
-    case NetSuite.Connections.Receiver.get(ticket) do
-      {:pending, nil} -> wait_for_response(ticket)
-      response      -> response
-    end
-  end
-
   setup do
     {:ok, pid} = @described_module.start_link(%{my: :config})
     {:ok, %{agent: pid}}
@@ -25,6 +18,30 @@ defmodule NetSuite.Connections.ConnectionTest do
     end)
   end
 
+  defp count_requests_for(agent) do
+    Enum.count(NetSuite.Connections.Receiver.engaged_connections, &(&1==agent))
+  end
+
+  test "can cast repeatedly to agent without running what's cast", %{agent: agent} do
+    sleep = fn(_)-> :timer.sleep(10000) end
+    assert count_requests_for(agent) == 0
+
+    assert :ok == @described_module.cast(agent, ref1=make_ref(), sleep)
+    assert NetSuite.Connections.Receiver.get(ref1) == {:pending, nil}
+    assert count_requests_for(agent) == 1
+
+    assert :ok == @described_module.cast(agent, ref2=make_ref(), sleep)
+    assert NetSuite.Connections.Receiver.get(ref1) == {:pending, nil}
+    assert NetSuite.Connections.Receiver.get(ref2) == {:pending, nil}
+    assert count_requests_for(agent) == 2
+
+    assert :ok == @described_module.cast(agent, ref3=make_ref(), sleep)
+    assert NetSuite.Connections.Receiver.get(ref1) == {:pending, nil}
+    assert NetSuite.Connections.Receiver.get(ref2) == {:pending, nil}
+    assert NetSuite.Connections.Receiver.get(ref3) == {:pending, nil}
+    assert count_requests_for(agent) == 3
+  end
+
   test "notifies event reciever when casting functions", %{agent: agent} do
     assert :ok == @described_module.cast(agent, ticket=make_ref(), fn(_)->
       :timer.sleep(1000000000000000000000000000)
@@ -35,14 +52,15 @@ defmodule NetSuite.Connections.ConnectionTest do
   test "doesn't crash when there are errors in netsuite_calls", %{agent: agent} do
     buggy_funct = fn(_) -> raise ArithmeticError end
     assert :ok == @described_module.cast(agent, ticket=make_ref(), buggy_funct)
-    assert {:error, %ArithmeticError{message: "bad argument in arithmetic expression"}} == wait_for_response(ticket)
+    error = %ArithmeticError{message: "bad argument in arithmetic expression"}
+    assert {:error, error } == NetSuite.wait_for_response(ticket)
     assert Process.alive?(agent)
   end
 
   test "notifies event reciever when cast functions complete", %{agent: agent} do
     assert :ok == @described_module.cast(agent, ticket=make_ref(), fn(_)-> 42 end)
 
-    assert {:ok, 42} == wait_for_response(ticket)
+    assert {:ok, 42} == NetSuite.wait_for_response(ticket)
   end
 
   test "updates configs", %{agent: agent} do
