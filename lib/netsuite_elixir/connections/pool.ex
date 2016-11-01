@@ -60,7 +60,7 @@ defmodule NetSuite.Connections.Pool do
 
   def handle_call({:queue, netsuite_call}, _from, {connections, refs}) do
     NetSuite.Connections.Connection.cast(
-      NetSuite.Connections.QueueService.next_in_line(connections)
+      NetSuite.Connections.QueueService.next_in_line(connections),
       ticket = make_ref(),
       netsuite_call
     )

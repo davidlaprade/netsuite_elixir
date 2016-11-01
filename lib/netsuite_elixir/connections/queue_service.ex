@@ -10,7 +10,7 @@ defmodule NetSuite.Connections.QueueService do
   end
 
   defp non_engaged_connection(pool, engaged) do
-    Enum.filter(pool, &(!Enum.member?(engaged, &1))
+    Enum.filter(pool, &(!Enum.member?(engaged, &1)))
     |> List.first
   end
 
